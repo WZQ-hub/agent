@@ -1,7 +1,15 @@
+import os
+
+import dotenv
 from langchain.tools import tool
+from langchain_core.tools import Tool
 from pydantic import BaseModel, Field
 from typing import Literal
+from langchain_community.tools import BraveSearch
+from sqlalchemy.sql.functions import count
 
+dotenv.load_dotenv()
+brave_key = os.getenv("BRAVE_API")
 class WeatherInput(BaseModel):
     """Input for weather query."""
     location: str = Field(description="City name or coordinates")
@@ -27,7 +35,16 @@ def get_weather(location: str, units: str = "celsius", include_forcast: bool = F
     """
     return f"The current weather in {location} is 20 degrees {units}. Forecast included: {include_forcast}."
 
-
+@tool
+def search_news(query: str, limit: int = 10) -> str:
+    """Search the news articles and summary.
+    Args:
+        query (str): The search query.
+        limit (int, optional): The maximum number of news to return.
+    """
+    bravesearch = BraveSearch.from_api_key(api_key=brave_key, search_kwargs={"count": limit})
+    result = bravesearch.run(query)
+    return f"found {limit} news for {query}. {result}"
 
 
 
