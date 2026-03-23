@@ -46,5 +46,5 @@ agent = create_agent(
     model = advanced_model,
     middleware=[dynamic_model_selection],
     tools=tools,
-    system_prompt="你是一个有用的新闻助手， 你需要仔细分析和验证新闻的准确率"
+    system_prompt="你是一个新闻助手， 你需要仔细分析和验证新闻的准确率"
 )

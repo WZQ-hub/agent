@@ -2,7 +2,7 @@ import os
 
 import dotenv
 from langchain.tools import tool
-from langchain_core.tools import Tool
+from langgraph.config import get_stream_writer
 from pydantic import BaseModel, Field
 from typing import Literal
 from langchain_community.tools import BraveSearch
@@ -42,6 +42,8 @@ def search_news(query: str, limit: int = 10) -> str:
         query (str): The search query.
         limit (int, optional): The maximum number of news to return.
     """
+    writer = get_stream_writer()
+    writer(f"Searching news for {query}.")
     bravesearch = BraveSearch.from_api_key(api_key=brave_key, search_kwargs={"count": limit})
     result = bravesearch.run(query)
     return f"found {limit} news for {query}. {result}"
