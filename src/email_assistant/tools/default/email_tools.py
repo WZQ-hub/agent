@@ -1,6 +1,6 @@
 from langchain_core.tools import tool
 from typing import Literal
-from pydantic import Basemodel
+from pydantic import BaseModel
 
 
 @tool
@@ -16,11 +16,11 @@ def triage_email(category: Literal["ignore", "notify", "respond"]) -> str:
 
 
 @tool
-class Done(Basemodel):
+class Done(BaseModel):
     """email has beed sent"""
     done: bool
 
 @tool
-class Question(Basemodel):
+class Question(BaseModel):
     """Question to ask user."""
     content: str
