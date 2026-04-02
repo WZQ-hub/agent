@@ -34,11 +34,11 @@ try:
     from google.oauth2.credentials import Credentials
     from google_auth_oauthlib.flow import InstalledAppFlow
     from google.auth.transport.requests import Request
-    
+
     # Setup logging
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger(__name__)
-    
+
     # Email content extraction function
     def extract_message_part(payload):
         """Extract content from a message part."""
@@ -139,11 +139,12 @@ try:
     EmailData = Dict[str, Any]
     
     GMAIL_API_AVAILABLE = True
-    
-except ImportError:
+
+except ImportError as e:
     # If Gmail API libraries aren't available, set flag to use mock implementation
     GMAIL_API_AVAILABLE = False
     logger = logging.getLogger(__name__)
+    logger.warning("Gmail dependencies are missing; using mock implementation: %s", str(e))
 
 # Helper function that is used by the tool and can be imported elsewhere
 def fetch_group_emails(
@@ -182,13 +183,13 @@ def fetch_group_emails(
     # Check if required credential files exist
     if not use_mock and not gmail_token and not gmail_secret:
         token_path = str(_SECRETS_DIR / "token.json")
-        secrets_path = str(_SECRETS_DIR / "secrets.json")
-        
+        secrets_path = str(_SECRETS_DIR / "client_secret.json")
+
         if not os.path.exists(token_path) and not os.path.exists(secrets_path):
-            logger.warning(f"No Gmail API credentials found. Looking for token.json or secrets.json in .secrets directory")
+            logger.warning("No Gmail API credentials found. Looking for token.json or client_secret.json in .secrets directory")
             logger.warning("Using mock implementation instead")
             use_mock = True
-    
+
     # Return mock data if needed
     if use_mock:
         # For demo purposes, we return a mock email
@@ -453,7 +454,7 @@ class FetchEmailsInput(BaseModel):
     )
 
 @tool(args_schema=FetchEmailsInput)
-def fetch_emails_tool(email_address: str, minutes_since: int = 30) -> str:
+def fetch_emails_tool(email_address: str, minutes_since: int = 36) -> str:
     """
     Fetches recent emails from Gmail for the specified email address.
     

@@ -5,25 +5,33 @@ import os
 
 from langgraph.types import Command
 
-from email_assistant.prompts import triage_system_prompt, triage_user_prompt, agent_system_prompt, default_background, default_triage_instructions, default_response_preferences, default_cal_preferences
+from email_assistant.prompts import (
+    triage_system_prompt,
+    triage_user_prompt,
+    agent_system_prompt_gmail,
+    default_background,
+    default_triage_instructions,
+    default_response_preferences,
+    default_cal_preferences,
+    GMAIL_TOOLS_PROMPT,
+)
 from langchain_openai import ChatOpenAI
 from langgraph.graph import StateGraph, START, END
 from email_assistant.schemas import RouterSchema, State, StateInput
 from email_assistant.tools import get_tools, get_tools_by_name
-from email_assistant.tools.default.prompt_templates import AGENT_TOOLS_PROMPT
 from utils import parse_email, format_email_markdown
 
 load_dotenv()
 api_key = os.getenv("API_KEY")
 # Get tools
-tools = get_tools()
+tools = get_tools(include_email=True)
 tools_by_name = get_tools_by_name(tools)
 
 
 
 # Initialize the LLM for use with router / structured output
 llm = ChatOpenAI(
-    model="deepseek-ai/DeepSeek-V3.2-TEE",
+    model="deepseek-ai/DeepSeek-V3.1-TEE",
     base_url="https://llm.chutes.ai/v1",
     api_key=api_key,
     temperature=0.1,
@@ -31,7 +39,7 @@ llm = ChatOpenAI(
 llm_router = llm.with_structured_output(RouterSchema)
 
 # Initialize the LLM, enforcing tool use (of any available tools) for agent
-llm_with_tools = llm.bind_tools(tools, tool_choice="required")
+llm_with_tools = llm.bind_tools(tools, tool_choice="any")
 
 
 # Nodes
@@ -43,8 +51,8 @@ def llm_call(state: State):
             llm_with_tools.invoke(
                 [
                     {
-                        "role": "system", "content": agent_system_prompt.format(
-                        tools_prompt=AGENT_TOOLS_PROMPT,
+                        "role": "system", "content": agent_system_prompt_gmail.format(
+                        tools_prompt=GMAIL_TOOLS_PROMPT,
                         background=default_background,
                         response_preferences=default_response_preferences,
                         cal_preferences=default_cal_preferences)

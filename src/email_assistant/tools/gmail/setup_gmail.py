@@ -27,12 +27,12 @@ def main():
     secrets_dir = Path(__file__).parent.absolute() / ".secrets"
     secrets_dir.mkdir(parents=True, exist_ok=True)
     
-    # Check for secrets.json
+    # Check for client_secret.json
     secrets_path = secrets_dir / "client_secret.json"
     if not secrets_path.exists():
         print(f"Error: Client secrets file not found at {secrets_path}")
         print("Please download your OAuth client ID JSON from Google Cloud Console")
-        print("and save it as .secrets/secrets.json")
+        print("and save it as .secrets/client_secret.json")
         return 1
     
     print("Starting Gmail API authentication flow...")

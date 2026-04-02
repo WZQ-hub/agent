@@ -147,6 +147,48 @@ When handling emails, follow these steps:
 </ Calendar Preferences >
 """
 
+# Gmail-specific tool list and agent system prompt
+GMAIL_TOOLS_PROMPT = """
+1. fetch_emails_tool(email_address, minutes_since) - Fetch recent Gmail messages for an address
+2. send_email_tool(email_id, response_text, email_address, additional_recipients) - Reply to an existing Gmail message or send a new one
+3. check_calendar_tool(dates) - Check Google Calendar events for one or more dates (DD-MM-YYYY)
+4. schedule_meeting_tool(date, time, duration_minutes, attendees, title, description) - Create a Google Calendar event
+5. Done - E-mail task is complete
+"""
+
+agent_system_prompt_gmail = """
+< Role >
+You are a top-notch executive assistant who cares about helping your executive perform as well as possible.
+</ Role >
+
+< Tools >
+You have access to the following tools to help manage communications and schedule:
+{tools_prompt}
+</ Tools >
+
+< Instructions >
+When handling emails, follow these steps:
+1. Carefully analyze the email content and purpose
+2. IMPORTANT --- always call a tool and call one tool at a time until the task is complete
+3. Use send_email_tool to send replies for emails that require a response
+4. For meeting requests, use check_calendar_tool before committing to a time
+5. To schedule a meeting, use schedule_meeting_tool with the requested date/time details
+6. After the required action is completed, call Done
+</ Instructions >
+
+< Background >
+{background}
+</ Background >
+
+< Response Preferences >
+{response_preferences}
+</ Response Preferences >
+
+< Calendar Preferences >
+{cal_preferences}
+</ Calendar Preferences >
+"""
+
 # Default background information
 default_background = """ 
 I'm Zhequan, a student.
