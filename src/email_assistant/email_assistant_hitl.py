@@ -106,7 +106,7 @@ def triage_router(state: State) -> Command[Literal["triage_interrupt_handler", "
                 "content": f"response to the email: {email_markdown}"
             }]
         }
-    elif classification == "notify":
+    elif classification == "notice":
         print("🔔 Classification: NOTIFY - This email contains important information")
 
         #next node
